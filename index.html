@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090a0f">
+  <meta name="description" content="Uma coleção de memórias feita com carinho.">
+  <title>Momentos incríveis ❤️ — Para você</title>
+
+  <style>
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: #090a0f;
+      color: #fff;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .app-shell {
+      position: relative;
+      width: min(100%, 430px);
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      isolation: isolate;
+      background: #090a0f;
+      transform: translateZ(0);
+    }
+
+    @media (min-width: 600px) {
+      body {
+        padding: 16px;
+        box-sizing: border-box;
+      }
+
+      .app-shell {
+        height: min(900px, calc(100dvh - 32px));
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 2rem;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+      }
+    }
+  </style>
+
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="image" href="images/perfil-wallpaper.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=SF+Pro+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="memorias.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body class="bg-black text-white font-sans overflow-hidden">
+  <main class="app-shell">
+    <section id="home-screen" class="home-screen relative w-full h-full flex flex-col justify-between transition-all duration-700 ease-in-out z-20">
+      <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60" aria-hidden="true"></div>
+
+      <div class="relative z-10 pt-[max(0.75rem,env(safe-area-inset-top))] px-7 flex justify-between items-center text-xs font-semibold font-ios" aria-label="Barra de status simulada">
+        <button id="open-notifications-accessible" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:z-50 focus:rounded-lg focus:bg-neutral-900 focus:px-3 focus:py-2" type="button">Abrir prévia das notificações</button>
+        <span id="small-clock">00:00</span>
+        <div class="notch" aria-hidden="true"><span></span><span></span></div>
+        <div class="flex items-center space-x-2" aria-hidden="true">
+          <i class="fa-solid fa-signal"></i>
+          <i class="fa-solid fa-wifi"></i>
+          <i class="fa-solid fa-battery-full text-sm"></i>
+        </div>
+      </div>
+
+      <div class="relative z-10 text-center mt-7 px-4">
+        <p id="home-date" class="text-sm uppercase tracking-widest font-semibold text-white/85 drop-shadow"></p>
+        <h1 id="large-clock" class="text-6xl font-light font-ios tracking-tight drop-shadow-md mt-1">00:00</h1>
+      </div>
+
+      <div class="relative z-10 px-6 my-auto">
+        <div class="grid grid-cols-4 gap-6 max-w-xs mx-auto">
+          <div class="col-span-4 flex flex-col items-center my-4">
+            <div class="relative">
+              <button id="open-memories" class="group relative focus:outline-none transition-transform active:scale-95" aria-label="Abrir momentos incríveis">
+                <span class="absolute -inset-2 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 rounded-3xl blur-lg opacity-70 group-hover:opacity-100 transition duration-500 animate-pulse-subtle" aria-hidden="true"></span>
+                <span class="relative w-20 h-20 bg-gradient-to-tr from-rose-500/90 via-purple-600/90 to-indigo-500/90 rounded-[1.4rem] flex items-center justify-center shadow-2xl border border-white/30 backdrop-blur-xl">
+                  <i class="fa-solid fa-heart text-4xl text-white drop-shadow-md" aria-hidden="true"></i>
+                </span>
+              </button>
+              <span class="absolute -top-2 -right-3 bg-red-500 text-white font-bold text-xs min-w-7 h-7 px-1 rounded-full flex items-center justify-center border-2 border-black shadow-md select-none birthday-badge" aria-label="27 anos">
+                27
+              </span>
+            </div>
+            <span class="text-xs font-semibold tracking-wide mt-2 drop-shadow-md">Momentos incríveis</span>
+          </div>
+
+          <div class="flex flex-col items-center opacity-60">
+            <div class="w-12 h-12 bg-green-500/80 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-phone" aria-hidden="true"></i></div>
+            <span class="text-[10px] mt-1">Telefone</span>
+          </div>
+          <div class="flex flex-col items-center opacity-60">
+            <div class="w-12 h-12 bg-blue-500/80 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-message" aria-hidden="true"></i></div>
+            <span class="text-[10px] mt-1">Mensagens</span>
+          </div>
+          <div class="flex flex-col items-center opacity-60">
+            <div class="w-12 h-12 bg-gradient-to-b from-purple-400 to-pink-500 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-camera" aria-hidden="true"></i></div>
+            <span class="text-[10px] mt-1">Câmera</span>
+          </div>
+          <div class="flex flex-col items-center opacity-60">
+            <div class="w-12 h-12 bg-red-500/80 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-music" aria-hidden="true"></i></div>
+            <span class="text-[10px] mt-1">Música</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative z-10 text-center pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div class="w-32 h-1 bg-white/80 rounded-full mx-auto" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section id="memories-screen" class="fixed inset-0 z-30 hidden bg-black opacity-0 transition-opacity duration-500 flex flex-col" aria-label="Nossas memórias">
+      <header class="absolute top-0 left-0 right-0 z-40 px-4 pt-3 pb-6 bg-gradient-to-b from-black/90 via-black/50 to-transparent flex flex-col pointer-events-none">
+        <div class="flex items-center space-x-2 pointer-events-auto">
+          <button id="close-memories" class="text-white text-lg p-2 rounded-full hover:bg-white/10 active:scale-90 transition" aria-label="Voltar à tela inicial">
+            <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+          </button>
+          <div class="flex min-w-0 items-center gap-2">
+            <span class="font-bold text-lg tracking-tight">Reels Especial</span>
+            <span id="photo-counter" class="text-xs text-white/70" aria-live="polite" aria-atomic="true">1 de 11</span>
+          </div>
+        </div>
+        <div class="photo-progress" aria-hidden="true"><span id="photo-progress-fill"></span></div>
+      </header>
+
+      <div id="memories-feed" class="reels-container w-full h-full" aria-label="Deslize pelas fotos; a sequência recomeça ao final"></div>
+    </section>
+
+    <section id="comments-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex flex-col justify-end" role="dialog" aria-modal="true" aria-labelledby="comments-title">
+      <div class="bg-neutral-900 rounded-t-3xl p-5 border-t border-white/10 max-h-[70vh] flex flex-col">
+        <div class="w-12 h-1.5 bg-neutral-700 rounded-full mx-auto mb-4" aria-hidden="true"></div>
+        <h2 id="comments-title" class="text-center font-bold text-sm border-b border-neutral-800 pb-3 text-neutral-300">Comentários</h2>
+        <div id="comments-list" class="overflow-y-auto my-4 space-y-4 pr-1 text-sm"></div>
+        <button id="close-comments" class="w-full py-3 bg-neutral-800 hover:bg-neutral-700 rounded-xl text-xs font-bold transition">Fechar</button>
+      </div>
+    </section>
+
+    <section id="notification-center" class="notification-overlay fixed inset-0 z-[60] hidden" role="dialog" aria-modal="true" aria-labelledby="notification-title" aria-describedby="notification-preview-label" aria-hidden="true" inert>
+      <button id="notification-backdrop" class="notification-backdrop absolute inset-0 h-full w-full" type="button" aria-label="Fechar prévia das notificações"></button>
+      <div class="notification-panel absolute left-0 right-0 top-0 mx-auto w-full max-w-2xl px-5 pb-8">
+        <div class="notification-handle mx-auto mb-5 h-1.5 w-12 rounded-full" aria-hidden="true"></div>
+        <header class="mb-5 flex items-start justify-between gap-4">
+          <div>
+            <p id="notification-preview-label" class="mb-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/55">Prévia simulada</p>
+            <h2 id="notification-title" class="text-xl font-bold tracking-tight">Notificações</h2>
+            <p id="notification-date" class="mt-1 text-sm text-white/65"></p>
+          </div>
+          <button id="close-notifications" class="rounded-full bg-white/10 p-2 text-sm text-white/80 transition hover:bg-white/20" type="button" aria-label="Fechar notificações">
+            <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+          </button>
+        </header>
+
+        <div class="space-y-3">
+          <article class="notification-card flex items-start gap-3 p-4">
+            <span class="notification-app-icon whatsapp-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xl text-white" aria-hidden="true">
+              <i class="fa-brands fa-whatsapp"></i>
+            </span>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-xs font-semibold text-white/70">WhatsApp</span>
+                <time id="whatsapp-notification-time" class="text-[11px] text-white/45"></time>
+              </div>
+              <p class="mt-1 text-sm font-bold text-white">Pedro dog</p>
+              <p class="mt-0.5 text-sm leading-relaxed text-white/85">Feliz aniversário!</p>
+            </div>
+          </article>
+
+          <article class="notification-card flex items-start gap-3 p-4">
+            <span class="notification-app-icon shopee-icon flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-lg text-white" aria-hidden="true">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </span>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between gap-3">
+                <span class="text-xs font-semibold text-white/70">Shopee</span>
+                <time id="shopee-notification-time" class="text-[11px] text-white/45"></time>
+              </div>
+              <p class="mt-1 text-sm font-bold text-white">Atualização do pedido</p>
+              <p class="mt-0.5 text-sm leading-relaxed text-white/85">Sua compra foi barrada na alfândega.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
