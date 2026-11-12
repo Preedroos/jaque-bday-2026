@@ -23,6 +23,26 @@ function updateClock() {
   });
 }
 
+let activePhotoZoom;
+
+function startPhotoZoom(slide) {
+  const image = slide.querySelector(':scope > img');
+  if (!image || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  activePhotoZoom?.cancel();
+  image.style.transform = 'scale(1)';
+
+  if (typeof image.animate === 'function') {
+    activePhotoZoom = image.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }],
+      { duration: 9000, easing: 'ease-out', fill: 'forwards' }
+    );
+    return;
+  }
+
+  slide.classList.add('is-zooming');
+}
+
 function createPhotoItem(item, index, isLoopClone = false) {
   const itemElement = document.createElement('article');
   itemElement.className = 'reel-item relative w-full flex flex-col justify-between p-4 overflow-hidden';
@@ -30,9 +50,13 @@ function createPhotoItem(item, index, isLoopClone = false) {
   if (isLoopClone) itemElement.dataset.loopClone = 'true';
   const imagePositionClass = item.position === 'left' ? 'object-position-left' : '';
   const spotifySearchUrl = `https://open.spotify.com/search/${encodeURIComponent(`${item.music.track} ${item.music.artist}`)}`;
+  const gestureHint = index === 0 && !isLoopClone
+    ? `<div class="notification-gesture-hint" aria-hidden="true"><i class="fa-solid fa-arrow-down" aria-hidden="true"></i><span>Puxe para baixo do topo para ver as notificações</span></div>`
+    : '';
   itemElement.innerHTML = `
     <img src="${escapeHTML(item.src)}" alt="${escapeHTML(item.alt)}" class="absolute inset-0 w-full h-full object-cover z-0 ${imagePositionClass}" ${index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}>
     <div class="photo-overlay absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 z-10"></div>
+    ${gestureHint}
     <div class="photo-tap-area absolute inset-0 z-20" aria-label="Toque duas vezes para curtir"></div>
     <div class="absolute right-3 bottom-20 z-30 flex flex-col items-center space-y-5">
       <button class="like-button flex flex-col items-center group focus:outline-none" aria-label="Curtir foto">
@@ -84,20 +108,27 @@ function createPhotoItem(item, index, isLoopClone = false) {
     likeCount.textContent = String((Number(item.likes) || 0) + (liked ? 1 : 0));
   };
 
-  likeButton.addEventListener('click', toggleLike);
+  const showLikeFeedback = () => {
+    const feedback = document.createElement('span');
+    feedback.className = 'like-feedback';
+    feedback.setAttribute('aria-hidden', 'true');
+    feedback.innerHTML = '<i class="fa-solid fa-heart" aria-hidden="true"></i>';
+    itemElement.appendChild(feedback);
+    window.setTimeout(() => feedback.remove(), 900);
+  };
+
+  likeButton.addEventListener('click', () => {
+    toggleLike();
+    if (liked) showLikeFeedback();
+  });
   itemElement.querySelector('.comments-button').addEventListener('click', () => openComments(item.comments));
 
   let lastTap = 0;
-  itemElement.querySelector('.photo-tap-area').addEventListener('click', (event) => {
+  itemElement.querySelector('.photo-tap-area').addEventListener('click', () => {
     const now = Date.now();
     if (now - lastTap < 300) {
       if (!liked) toggleLike();
-      const heart = document.createElement('i');
-      heart.className = 'fa-solid fa-heart text-red-500 text-6xl fixed z-50 heart-popup pointer-events-none';
-      heart.style.left = `${event.clientX - 30}px`;
-      heart.style.top = `${event.clientY - 30}px`;
-      document.body.appendChild(heart);
-      window.setTimeout(() => heart.remove(), 800);
+      showLikeFeedback();
     }
     lastTap = now;
   });
@@ -129,10 +160,16 @@ function renderMemories() {
     const currentSlide = feed.querySelector('.reel-item.is-active');
     if (currentSlide === slide && !restartAnimation) return;
 
+    activePhotoZoom?.cancel();
+    activePhotoZoom = undefined;
+    currentSlide?.classList.remove('is-zooming');
     currentSlide?.classList.remove('is-active');
     slide.classList.remove('is-active');
     if (restartAnimation) void slide.offsetWidth;
     slide.classList.add('is-active');
+    if (!document.getElementById('memories-screen').classList.contains('hidden')) {
+      startPhotoZoom(slide);
+    }
 
     const activeIndex = Number(slide.dataset.photoIndex);
     progress.style.width = `${((activeIndex + 1) / photos.length) * 100}%`;
@@ -187,6 +224,8 @@ function renderComments(comments) {
 
 let restartPhotoAnimation = () => {};
 let memoriesTransitionTimeout;
+let gestureHintTimeout;
+let hasShownGestureHint = false;
 
 function openMemories() {
   window.clearTimeout(memoriesTransitionTimeout);
@@ -203,6 +242,13 @@ function openMemories() {
     screen.classList.add('opacity-100');
     document.getElementById('home-screen').classList.add('scale-95', 'blur-sm');
     window.requestAnimationFrame(restartPhotoAnimation);
+    const hint = document.querySelector('.notification-gesture-hint');
+    if (hint && !hasShownGestureHint) {
+      hasShownGestureHint = true;
+      hint.classList.add('is-visible');
+      window.clearTimeout(gestureHintTimeout);
+      gestureHintTimeout = window.setTimeout(() => hint.classList.remove('is-visible'), 6500);
+    }
   }, 50);
 }
 
@@ -344,8 +390,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (!document.getElementById('comments-modal').classList.contains('hidden')) return;
 
-    const statusBar = document.querySelector('[aria-label="Barra de status simulada"]');
-    if (event.clientY > statusBar.getBoundingClientRect().bottom + 12) return;
+    const memoriesScreen = document.getElementById('memories-screen');
+    const memoriesOpen = !memoriesScreen.classList.contains('hidden');
+    if (memoriesOpen) {
+      if (event.clientY > 56) return;
+    } else {
+      const statusBar = document.querySelector('[aria-label="Barra de status simulada"]');
+      if (event.clientY > statusBar.getBoundingClientRect().bottom + 12) return;
+    }
     notificationSwipeStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId };
   }, { passive: true });
 

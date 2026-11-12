@@ -5,7 +5,7 @@ Uma página estática de aniversário, feita para celular e publicável no GitHu
 ## Recursos
 
 - Feed vertical com rolagem, encaixe por foto e retorno contínuo ao início.
-- Zoom suave na foto atual e indicador de progresso do feed.
+- Zoom suave na foto atual, indicador de progresso e um coração central animado ao curtir.
 - Curtidas por toque ou clique duplo, comentários por foto e buscas das músicas sugeridas no Spotify.
 - Prévia simulada da Central de Notificações, aberta ao puxar para baixo a partir do topo.
 - Layout que mantém a largura de um celular e centraliza a experiência em telas grandes, suporte a áreas seguras e respeito à preferência por movimento reduzido.
@@ -45,7 +45,7 @@ As fotos aparecem na ordem do array. Para adicionar uma, coloque a imagem em `im
 
 ## Efeitos e acessibilidade
 
-O zoom discreto da foto ativa e a transição do sombreado dão movimento sem adicionar vídeo pesado. O indicador acompanha a foto visível por `IntersectionObserver`; as animações usam transformações e opacidade, e são desativadas quando o dispositivo solicita movimento reduzido.
+O zoom da foto ativa usa a Web Animations API, com alternativa em CSS para navegadores sem esse recurso. Na primeira abertura do feed, uma dica orienta como puxar para baixo a partir do topo para ver as notificações. Curtir uma foto exibe um coração animado no centro. O indicador acompanha a foto visível por `IntersectionObserver`; as animações são reduzidas ou desativadas quando o dispositivo solicita movimento reduzido.
 
 Referências consultadas:
 
