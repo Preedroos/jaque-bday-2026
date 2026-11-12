@@ -125,17 +125,35 @@ function renderMemories() {
   const slides = feed.querySelectorAll('.reel-item');
   const progress = document.getElementById('photo-progress-fill');
   const counter = document.getElementById('photo-counter');
+  const setActiveSlide = (slide, restartAnimation = false) => {
+    const currentSlide = feed.querySelector('.reel-item.is-active');
+    if (currentSlide === slide && !restartAnimation) return;
+
+    currentSlide?.classList.remove('is-active');
+    slide.classList.remove('is-active');
+    if (restartAnimation) void slide.offsetWidth;
+    slide.classList.add('is-active');
+
+    const activeIndex = Number(slide.dataset.photoIndex);
+    progress.style.width = `${((activeIndex + 1) / photos.length) * 100}%`;
+    counter.textContent = `${activeIndex + 1} de ${photos.length}`;
+  };
+
+  restartPhotoAnimation = () => {
+    const activeIndex = Math.min(
+      Math.round(feed.scrollTop / feed.clientHeight),
+      slides.length - 1
+    );
+    setActiveSlide(slides[activeIndex], true);
+  };
+
   const observer = new IntersectionObserver((entries) => {
     const activeSlide = entries
       .filter((entry) => entry.isIntersecting)
       .sort((first, second) => second.intersectionRatio - first.intersectionRatio)[0];
     if (!activeSlide) return;
 
-    feed.querySelector('.reel-item.is-active')?.classList.remove('is-active');
-    activeSlide.target.classList.add('is-active');
-    const activeIndex = Number(activeSlide.target.dataset.photoIndex);
-    progress.style.width = `${((activeIndex + 1) / photos.length) * 100}%`;
-    counter.textContent = `${activeIndex + 1} de ${photos.length}`;
+    setActiveSlide(activeSlide.target);
   }, { root: feed, threshold: [0.6, 0.8] });
 
   slides.forEach((slide) => observer.observe(slide));
@@ -167,6 +185,7 @@ function renderComments(comments) {
   list.scrollTop = 0;
 }
 
+let restartPhotoAnimation = () => {};
 let memoriesTransitionTimeout;
 
 function openMemories() {
@@ -183,6 +202,7 @@ function openMemories() {
     screen.classList.remove('opacity-0');
     screen.classList.add('opacity-100');
     document.getElementById('home-screen').classList.add('scale-95', 'blur-sm');
+    window.requestAnimationFrame(restartPhotoAnimation);
   }, 50);
 }
 
@@ -265,7 +285,7 @@ function openNotificationCenter() {
   window.requestAnimationFrame(() => {
     if (overlay.getAttribute('aria-hidden') === 'false') overlay.classList.add('is-open');
   });
-  document.getElementById('close-notifications').focus();
+  document.getElementById('notification-title').focus();
 }
 
 function closeNotificationCenter() {
@@ -304,19 +324,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   document.getElementById('open-notifications-accessible').addEventListener('click', openNotificationCenter);
-  document.getElementById('close-notifications').addEventListener('click', closeNotificationCenter);
   document.getElementById('notification-backdrop').addEventListener('click', closeNotificationCenter);
   document.getElementById('notification-center').addEventListener('keydown', (event) => {
     if (event.key === 'Tab') {
       event.preventDefault();
-      document.getElementById('close-notifications').focus();
+      document.getElementById('notification-title').focus();
     }
   });
 
   let notificationSwipeStart;
   document.addEventListener('pointerdown', (event) => {
     if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return;
-    if (!document.getElementById('notification-center').classList.contains('hidden')) return;
+    const notificationCenter = document.getElementById('notification-center');
+    if (!notificationCenter.classList.contains('hidden')) {
+      if (event.target.closest('.notification-panel')) {
+        notificationSwipeStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId, closing: true };
+      }
+      return;
+    }
     if (!document.getElementById('comments-modal').classList.contains('hidden')) return;
 
     const statusBar = document.querySelector('[aria-label="Barra de status simulada"]');
@@ -329,8 +354,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const deltaY = event.clientY - notificationSwipeStart.y;
     const deltaX = Math.abs(event.clientX - notificationSwipeStart.x);
+    const closing = notificationSwipeStart.closing;
     notificationSwipeStart = undefined;
-    if (deltaY >= 60 && deltaY > deltaX * 1.25) openNotificationCenter();
+    if (deltaX > Math.abs(deltaY) * 0.8) return;
+    if (closing && deltaY <= -60) closeNotificationCenter();
+    else if (!closing && deltaY >= 60) openNotificationCenter();
   }, { passive: true });
   document.addEventListener('pointercancel', () => {
     notificationSwipeStart = undefined;

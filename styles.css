@@ -187,7 +187,7 @@ button:focus-visible {
 }
 
 .reel-item.is-active > img {
-  animation: gentle-zoom 9s ease-out both;
+  animation: gentle-zoom 8s ease-out both;
 }
 
 .reel-item.is-active .photo-overlay {
@@ -195,7 +195,8 @@ button:focus-visible {
 }
 
 @keyframes gentle-zoom {
-  to { transform: scale(1.055); }
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
 }
 
 @keyframes reveal-overlay {
